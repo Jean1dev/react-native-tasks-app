@@ -1,29 +1,26 @@
-import React, { Component } from 'react';
-
+import React, { Component } from 'react'
 import {
-    View,
+    StyleSheet,
     Text,
+    View,
     ImageBackground,
     TouchableOpacity,
     Alert,
-    StyleSheet,
     AsyncStorage
-} from 'react-native';
-
-import commonStyles from '../style'
-import backgroundImage from '../../assets/imgs/login.jpg'
-import AuthInput from '../components/AuthInput'
+} from 'react-native'
 import axios from 'axios'
 import { server, showError } from '../common'
+import AuthInput from '../components/AuthInput'
+import commonStyles from '../commonStyles'
+import backgroundImage from '../../assets/imgs/login.jpg'
 
 export default class Auth extends Component {
-
     state = {
         stageNew: false,
         name: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
     }
 
     signin = async () => {
@@ -73,7 +70,7 @@ export default class Auth extends Component {
         validations.push(this.state.email && this.state.email.includes('@'))
         validations.push(this.state.password && this.state.password.length >= 6)
 
-        if (this.state.stageNew) {
+        if(this.state.stageNew) {
             validations.push(this.state.name && this.state.name.trim())
             validations.push(this.state.confirmPassword)
             validations.push(this.state.password === this.state.confirmPassword)
@@ -82,38 +79,38 @@ export default class Auth extends Component {
         const validForm = validations.reduce((all, v) => all && v)
 
         return (
-            <ImageBackground source={backgroundImage}
+            <ImageBackground source={backgroundImage} 
                 style={styles.background}>
                 <Text style={styles.title}>Tasks</Text>
                 <View style={styles.formContainer}>
                     <Text style={styles.subtitle}>
-                        {this.state.stageNew ?
+                        {this.state.stageNew ? 
                             'Crie a sua conta' : 'Informe seus dados'}
                     </Text>
                     {this.state.stageNew &&
                         <AuthInput icon='user' placeholder='Nome'
                             style={styles.input}
                             value={this.state.name}
-                            onChangeText={name =>
+                            onChangeText={name => 
                                 this.setState({ name })} />}
                     <AuthInput icon='at' placeholder='E-mail'
                         style={styles.input}
                         value={this.state.email}
-                        onChangeText={email =>
+                        onChangeText={email => 
                             this.setState({ email })} />
                     <AuthInput icon='lock' secureTextEntry={true}
                         placeholder='Senha'
                         style={styles.input}
                         value={this.state.password}
-                        onChangeText={password =>
+                        onChangeText={password => 
                             this.setState({ password })} />
                     {this.state.stageNew &&
                         <AuthInput icon='asterisk'
                             secureTextEntry={true} placeholder='Confirmação'
                             style={styles.input}
                             value={this.state.confirmPassword}
-                            onChangeText={confirmPassword =>
-                                this.setState({ confirmPassword })} />}
+                            onChangeText={confirmPassword => 
+                            this.setState({ confirmPassword })} />}
                     <TouchableOpacity disabled={!validForm}
                         onPress={this.signinOrSignup}>
                         <View style={[styles.button, !validForm ? { backgroundColor: '#AAA' } : {}]}>
@@ -123,11 +120,11 @@ export default class Auth extends Component {
                     </TouchableOpacity>
                 </View>
                 <TouchableOpacity style={{ padding: 10 }}
-                    onPress={() => this.setState({
+                    onPress={() => this.setState({ 
                         stageNew: !this.state.stageNew
                     })}>
                     <Text style={styles.buttonText}>
-                        {this.state.stageNew ? 'Já possui conta?'
+                        {this.state.stageNew ? 'Já possui conta?' 
                             : 'Ainda não possui conta?'}</Text>
                 </TouchableOpacity>
             </ImageBackground>

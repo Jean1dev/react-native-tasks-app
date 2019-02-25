@@ -1,33 +1,33 @@
-import React from 'react';
-
-import {
-    View,
+import React from 'react'
+import { 
     StyleSheet,
     Text,
+    View,
     TouchableWithoutFeedback,
     TouchableOpacity
-} from 'react-native';
+} from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import moment from 'moment'
 import 'moment/locale/pt-br'
+import commonStyles from '../commonStyles'
 import Swipeable from 'react-native-swipeable'
-import _styles from '../style';
 
 export default props => {
     let check = null
-    if (props.doneAt === null) {
-        check = <View style={styles.pending} />
-
-    } else {
+    if (props.doneAt !== null) {
         check = (
             <View style={styles.done}>
                 <Icon name='check' size={20}
-                    color={_styles.colors.secondary} />
+                    color={commonStyles.colors.secondary} />
             </View>
         )
+    } else {
+        check = <View style={styles.pending} />
     }
 
-    const descStyle = props.doneAt !== null ? { textDecorationLine: 'line-through' } : {}
+    const descStyle = props.doneAt !== null ?
+        { textDecorationLine: 'line-through' } : {}
+
 
     const leftContent = (
         <View style={styles.exclude}>
@@ -45,10 +45,9 @@ export default props => {
     ]
 
     return (
-        <Swipeable leftActivationDistance={200}
+        <Swipeable leftActionActivationDistance={200}
             onLeftActionActivate={() => props.onDelete(props.id)}
-            leftContent={leftContent}
-            rightButtons={rightContent}>
+            leftContent={leftContent} rightButtons={rightContent}>
             <View style={styles.container}>
                 <TouchableWithoutFeedback onPress={() => props.onToggleTask(props.id)}>
                     <View style={styles.checkContainer}>{check}</View>
@@ -65,7 +64,6 @@ export default props => {
         </Swipeable>
     )
 }
-
 
 const styles = StyleSheet.create({
     container: {
@@ -95,13 +93,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     description: {
-        fontFamily: _styles.fontFamily,
-        color: _styles.colors.mainText,
+        fontFamily: commonStyles.fontFamily,
+        color: commonStyles.colors.mainText,
         fontSize: 15,
     },
     date: {
-        fontFamily: _styles.fontFamily,
-        color: _styles.colors.subText,
+        fontFamily: commonStyles.fontFamily,
+        color: commonStyles.colors.subText,
         fontSize: 12,
     },
     exclude: {
@@ -112,7 +110,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     excludeText: {
-        fontFamily: _styles.fontFamily,
+        fontFamily: commonStyles.fontFamily,
         color: '#FFF',
         fontSize: 20,
         margin: 10,

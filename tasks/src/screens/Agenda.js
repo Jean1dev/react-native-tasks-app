@@ -1,57 +1,34 @@
-import React, { Component } from 'react';
-
+import React, { Component } from 'react'
 import {
-    View,
-    Text,
     StyleSheet,
+    Text,
+    View,
     ImageBackground,
     FlatList,
     TouchableOpacity,
-    Platform,
-    AsyncStorage
-} from 'react-native';
+    Platform
+} from 'react-native'
+import axios from 'axios'
 import moment from 'moment'
 import 'moment/locale/pt-br'
-import todayImage from '../../assets/imgs/today.jpg'
-import weekImage from '../../assets/imgs/week.jpg'
-import monthImage from '../../assets/imgs/month.jpg'
-import commonStyles from '../style'
+import commonStyles from '../commonStyles'
 import Task from '../components/Task'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import AddTask from './AddTask'
 import ActionButton from 'react-native-action-button'
-import axios from 'axios'
+import AddTask from './AddTask'
 import { server, showError } from '../common'
-// import styles from './styles';
+
+import todayImage from '../../assets/imgs/today.jpg'
+import tomorrowImage from '../../assets/imgs/tomorrow.jpg'
+import weekImage from '../../assets/imgs/week.jpg'
+import monthImage from '../../assets/imgs/month.jpg'
 
 export default class Agenda extends Component {
-
     state = {
         tasks: [],
         visibleTasks: [],
-        showTaskDone: true,
-        showAddTask: false
-    }
-
-    loadTasks = async () => {
-        try {
-            const maxDate = moment()
-                .add({ days: this.props.daysAhead })
-                .format('YYYY-MM-DD 23:59')
-            const res = await axios.get(`${server}/tasks?date=${maxDate}`)
-            this.setState({ tasks: res.data }, this.filterTasks)
-        } catch (err) {
-            showError(err)
-        }
-    }
-
-    deleteTask = async id => {
-        try {
-            await axios.delete(`${server}/tasks/${id}`)
-            await this.loadTasks()
-        } catch (err) {
-            showError(err)
-        }
+        showDoneTasks: true,
+        showAddTask: false,
     }
 
     addTask = async task => {
@@ -67,30 +44,33 @@ export default class Agenda extends Component {
         }
     }
 
-    filterTask = () => {
+    deleteTask = async id => {
+        try {
+            await axios.delete(`${server}/tasks/${id}`)
+            await this.loadTasks()
+        } catch (err) {
+            showError(err)
+        }
+    }
+
+    filterTasks = () => {
         let visibleTasks = null
-        if (this.state.showTaskDone) {
+        if (this.state.showDoneTasks) {
             visibleTasks = [...this.state.tasks]
         } else {
             const pending = task => task.doneAt === null
             visibleTasks = this.state.tasks.filter(pending)
         }
         this.setState({ visibleTasks })
-        AsyncStorage.setItem('tasks', JSON.stringify(this.state.tasks))
     }
 
     toggleFilter = () => {
-        this.setState({ showTaskDone: !this.state.showTaskDone }, this.filterTask())
+        this.setState({ showDoneTasks: !this.state.showDoneTasks }
+            , this.filterTasks)
     }
 
-    toggleTask_offline = id => {
-        const tasks = [...this.state.tasks]
-        tasks.forEach(task => {
-            if (task.id === id) {
-                task.doneAt = task.doneAt ? null : new Date()
-            }
-        })
-        this.setState({ tasks }, this.filterTask())
+    componentDidMount = async () => {
+        this.loadTasks()
     }
 
     toggleTask = async id => {
@@ -102,8 +82,16 @@ export default class Agenda extends Component {
         }
     }
 
-    componentDidMount = async () => {
-        this.loadTasks()
+    loadTasks = async () => {
+        try {
+            const maxDate = moment()
+                .add({ days: this.props.daysAhead })
+                .format('YYYY-MM-DD 23:59')
+            const res = await axios.get(`${server}/tasks?date=${maxDate}`)
+            this.setState({ tasks: res.data }, this.filterTasks)
+        } catch (err) {
+            showError(err)
+        }
     }
 
     render() {
@@ -155,7 +143,7 @@ export default class Agenda extends Component {
                 <View style={styles.taksContainer}>
                     <FlatList data={this.state.visibleTasks}
                         keyExtractor={item => `${item.id}`}
-                        renderItem={({ item }) =>
+                        renderItem={({ item }) => 
                             <Task {...item} onToggleTask={this.toggleTask}
                                 onDelete={this.deleteTask} />} />
                 </View>
@@ -201,5 +189,3 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     }
 })
-
-

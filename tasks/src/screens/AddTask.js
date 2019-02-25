@@ -13,7 +13,7 @@ import {
     Platform
 } from 'react-native'
 import moment from 'moment'
-import commonStyles from '../style'
+import commonStyles from '../commonStyles'
 
 
 export default class AddTask extends Component {
